@@ -1196,7 +1196,7 @@ const DIAL_ITEMS = [
   ['LinkedIn', '/in/ankitha-venkatesh', 'https://www.linkedin.com/in/ankitha-venkatesh-96b547289/'],
   ['GitHub', '/ankithavenkatesh04', 'https://github.com/ankithavenkatesh04'],
   ['Behance', '/ankithavenkatesh', 'https://www.behance.net/ankithavenkatesh'],
-  ['Resume', 'Download my CV', 'https://ankitha-venkatesh-portfolio.netlify.app/assets/files/Ankitha_Venkatesh_Resume.pdf']
+  ['Resume', 'Download my CV', './Ankitha_Venkatesh_Resume.pdf']
 ];
 
 function FlipPhone() {
@@ -1476,12 +1476,10 @@ function CrashCourseModal({ open, onClose }) {
         )
       ),
       h('div', { className: 'modal-actions' },
-        h('a', {
+          h('a', {
           className: 'btn',
           style: { boxShadow: '3px 3px 0 #5b7083' },
-          href: 'https://ankitha-venkatesh-portfolio.netlify.app/assets/files/Ankitha_Venkatesh_Resume.pdf',
-          target: '_blank',
-          rel: 'noopener',
+          href: './Ankitha_Venkatesh_Resume.pdf',
           download: 'Ankitha_Venkatesh_Resume.pdf'
         }, 'Download CV ↗'),
         h('div', { className: 'social-icon-row' },

@@ -446,9 +446,8 @@ function AboutSpread() {
       h('div', { style: { display: 'flex', gap: 12, flexWrap: 'wrap' } },
         h('a', {
           className: 'btn alt',
-          href: 'https://ankitha-venkatesh-portfolio.netlify.app/assets/files/Ankitha_Venkatesh_Resume.pdf',
-          target: '_blank',
-          rel: 'noopener'
+          href: './Ankitha_Venkatesh_Resume.pdf',
+          download: 'Ankitha_Venkatesh_Resume.pdf'
         }, 'Download CV ↗')
       )
     ),

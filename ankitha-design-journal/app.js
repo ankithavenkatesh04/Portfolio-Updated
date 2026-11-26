@@ -447,7 +447,8 @@ function AboutSpread() {
         h('a', {
           className: 'btn alt',
           href: './Ankitha_Venkatesh_Resume.pdf',
-          download: 'Ankitha_Venkatesh_Resume.pdf'
+          target: '_blank',
+          rel: 'noopener'
         }, 'Download CV ↗')
       )
     ),
@@ -1476,10 +1477,12 @@ function CrashCourseModal({ open, onClose }) {
         )
       ),
       h('div', { className: 'modal-actions' },
-          h('a', {
+        h('a', {
           className: 'btn',
           style: { boxShadow: '3px 3px 0 #5b7083' },
           href: './Ankitha_Venkatesh_Resume.pdf',
+          target: '_blank',
+          rel: 'noopener',
           download: 'Ankitha_Venkatesh_Resume.pdf'
         }, 'Download CV ↗'),
         h('div', { className: 'social-icon-row' },
@@ -1665,9 +1668,34 @@ function App() {
       }
     };
 
+    /* Mobile: only an intentional horizontal swipe flips a page. */
+    const mobileMQ = window.matchMedia('(max-width: 900px)');
+    const SWIPE_MIN_X = 60;        // minimum horizontal travel (px)
+    const SWIPE_AXIS_RATIO = 1.6;  // horizontal travel must clearly beat vertical travel
+    const AXIS_LOCK_PX = 10;       // movement needed before the gesture direction is decided
+    let gestureAxis = null;        // null | 'h' | 'v'
+    let multiTouch = false;
+
     const onTouchStart = e => {
       const t = e.touches[0];
       touchStartRef.current = { x: t.clientX, y: t.clientY };
+      gestureAxis = null;
+      multiTouch = e.touches.length > 1;
+    };
+
+    const onTouchMove = e => {
+      if (e.touches.length > 1) multiTouch = true;
+      if (gestureAxis) return;
+      const t = e.touches[0];
+      const mx = Math.abs(t.clientX - touchStartRef.current.x);
+      const my = Math.abs(t.clientY - touchStartRef.current.y);
+      if (mx < AXIS_LOCK_PX && my < AXIS_LOCK_PX) return;
+      // Only call it horizontal if it is clearly horizontal; vertical or diagonal = scrolling
+      gestureAxis = mx > my * SWIPE_AXIS_RATIO ? 'h' : 'v';
+    };
+
+    const onTouchCancel = () => {
+      gestureAxis = null;
     };
 
     const onTouchEnd = e => {
@@ -1675,6 +1703,16 @@ function App() {
       const t = e.changedTouches[0];
       const dx = touchStartRef.current.x - t.clientX;
       const dy = touchStartRef.current.y - t.clientY;
+
+      if (mobileMQ.matches && openRef.current) {
+        const axis = gestureAxis;
+        gestureAxis = null;
+        if (multiTouch || axis !== 'h') return;
+        if (Math.abs(dx) < SWIPE_MIN_X || Math.abs(dx) < Math.abs(dy) * SWIPE_AXIS_RATIO) return;
+        goTo(idxRef.current + (dx > 0 ? 1 : -1));
+        return;
+      }
+
       if (Math.abs(dx) > 48 || Math.abs(dy) > 48) {
         const primary = Math.abs(dx) > Math.abs(dy) ? dx : dy;
         const step = primary > 0 ? 1 : -1;
@@ -1707,11 +1745,15 @@ function App() {
 
     window.addEventListener('wheel', onWheel, { passive: false });
     window.addEventListener('touchstart', onTouchStart, { passive: true });
+    window.addEventListener('touchmove', onTouchMove, { passive: true });
+    window.addEventListener('touchcancel', onTouchCancel, { passive: true });
     window.addEventListener('touchend', onTouchEnd, { passive: true });
     window.addEventListener('keydown', onKeyDown);
     return () => {
       window.removeEventListener('wheel', onWheel);
       window.removeEventListener('touchstart', onTouchStart);
+      window.removeEventListener('touchmove', onTouchMove);
+      window.removeEventListener('touchcancel', onTouchCancel);
       window.removeEventListener('touchend', onTouchEnd);
       window.removeEventListener('keydown', onKeyDown);
     };
